@@ -1,1 +1,1 @@
-This is a Rest service which I using fro test my Web application (EazySchollWeb Application)
+This is a Rest service which I using for test my Web application (EazySchollWeb Application)
