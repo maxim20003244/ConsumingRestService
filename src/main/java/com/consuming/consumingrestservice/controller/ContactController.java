@@ -1,24 +1,46 @@
 package com.consuming.consumingrestservice.controller;
 
 import com.consuming.consumingrestservice.model.Contact;
+import com.consuming.consumingrestservice.model.Response;
 import com.consuming.consumingrestservice.proxy.ContactProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @RestController
 public class ContactController {
+
     @Autowired
     ContactProxy contactProxy;
-  @GetMapping("/getMessages")
-    public List<Contact> getMessages(@RequestParam("status") String status){
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    @GetMapping("/getMessages")
+    public List<Contact> getMessages(@RequestParam("status") String status) {
         return contactProxy.getMessagesByStatus(status);
     }
+
+    @PostMapping("/saveMsg")
+    public ResponseEntity<Response> saveMsg(@RequestBody Contact contact){
+        String uri = "http://localhost:8080/api/contact/saveMsg";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("invocationFrom","RestTemplate");
+        HttpEntity<Contact> httpEntity = new HttpEntity<>(contact, headers);
+        ResponseEntity<Response> responseEntity = restTemplate.exchange(uri, HttpMethod.POST,
+                httpEntity,Response.class);
+        return responseEntity;
+    }
+
+
 
 
 
