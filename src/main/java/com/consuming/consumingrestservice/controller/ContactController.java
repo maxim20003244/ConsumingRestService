@@ -23,6 +23,8 @@ public class ContactController {
 
     @Autowired
     RestTemplate restTemplate;
+    @Autowired
+    WebClient webClient;
 
     @GetMapping("/getMessages")
     public List<Contact> getMessages(@RequestParam("status") String status) {
@@ -38,6 +40,16 @@ public class ContactController {
         ResponseEntity<Response> responseEntity = restTemplate.exchange(uri, HttpMethod.POST,
                 httpEntity,Response.class);
         return responseEntity;
+    }
+
+    @PostMapping("/saveMessage")
+    public Mono<Response> saveMessage(@RequestBody Contact contact){
+        String uri = "http://localhost:8080/api/contact/saveMsg";
+        return  webClient.post().uri(uri)
+                .header("invocationFrom", "WebClient")
+                .body(Mono.just(contact), Contact.class)
+                .retrieve()
+                .bodyToMono(Response.class);
     }
 
 
